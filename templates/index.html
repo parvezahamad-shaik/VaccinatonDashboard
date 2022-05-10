@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>COVID Vaccination Dashboard</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/w3.css">
+
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <!-- font -->
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/fontawesome.min.css"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;400&display=swap" rel="stylesheet">
+    <style type="text/css">
+
+        /* On mouse hover, lighten state color */
+        path:hover {
+            fill-opacity: .7;
+        }
+
+        /* Style for Custom Tooltip */
+        div.tooltip {
+            position: absolute;
+            text-align: left;
+            width: 160px;
+            height: 70px;
+            padding: 5px;
+            font: 12px sans-serif;
+            background: white;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        /* Legend Font Style */
+        body {
+            font: 11px sans-serif;
+        }
+
+
+    </style>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-fetch@3"></script>
+</head>
+<body style="margin: 0 !important;font-family: Montserrat,serif" class="w3-black">
+<div>
+    <p class="top-bar"> COVID Vaccination Dashboard </p>
+</div>
+
+
+<div id="div-right" style="width: 24vw;float: left;">
+    <div id="summary" style="height: 33vh; width: 100%;border-right:2px solid grey;border-bottom: 2px solid grey"></div>
+    <div id="vaccination_pie" style="height: 29.5vh;width: 100%;border-right:2px solid grey;border-bottom: solid grey;"></div>
+    <div id="mds"
+         style="height: 33vh;width: 100%;border-right:2px solid grey;border-bottom: 2px solid grey;">
+    </div>
+</div>
+<div class="padding-top" id="div-center" style="width: 50vw; height: 57vh; float: left;border-bottom: 2px solid grey">
+    <div id="map">
+        <div id="map_options" style="border-top:2px solid grey;">
+            <div class="center" style="height: 2vh;">
+                <button class="button button4" id="button_atleastone">Atleast one dose</button>
+                <button class="button button4" id="button_fullyvaccinated">Fully Vaccinated</button>
+                <button class="button button4" id="button_boosted">Boosted</button>
+            </div>
+            <div id="map_labels"></div>
+        </div>
+        <div id="map_projection"></div>
+    </div>
+    <div id="pcp"></div>
+</div>
+<div id="div-left" style="width: 24vw;float: left;border-top: 2px solid grey"></div>
+<script src="./static/javascript/index.js"></script>
+  <script type="text/javascript">
+             myVar = updateMDSChart({{ data | safe }})
+        </script>
+</body>
+</html>
