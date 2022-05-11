@@ -317,7 +317,7 @@ function plotVaccinationBarGraph(state) {
         .data(vaccination_data)
         .enter().append("rect")
         .attr("fill", function(d) {
-            return d.State == state ? "yellow" : "skyblue";
+            return d.State == state ? "rgb(100,239,85)" : "skyblue";
             // return d.State == state ? "rgba(190,7,179,0.58)" : "skyblue";
         })
         .attr("class", "bar")
@@ -661,7 +661,7 @@ function updateMDSChart(mdsData)
 function updateStackedChart(state){
     d3.select("body").select("#sac").selectAll('*').remove();
 
-    let margin = {top: 20, right: 100, bottom: 50, left: 100},
+    let margin = {top: 0, right: 100, bottom: 50, left: 100},
         width = window.innerWidth * 0.5 - margin.left - margin.right,
         height = window.innerHeight * 0.4 - margin.top - margin.bottom;
 
@@ -677,14 +677,14 @@ function updateStackedChart(state){
 
     let formatNumber = d3.format(".1f"),
         formatMillion = function(x) { return formatNumber(x / 1e6); };
-
+    //"#08f8bf"
     let x = d3.scaleTime()
         .range([0, width]);
 
     let y = d3.scaleLinear()
         .range([height, 0]);
-
-    let color = d3.scaleOrdinal(d3.schemeCategory20);
+    var clusterColors =["#e15050","#ffff00"]
+    let color = d3.scaleOrdinal(clusterColors);
 
     let xAxis = d3.axisBottom()
         .scale(x);
@@ -769,7 +769,7 @@ function updateStackedChart(state){
             .text("People in Millions");
         // d3.select("svg").select(".browser Deaths").style("stroke","red")
         svg.selectAll("line").style("stroke", "white");
-        // svg.selectAll("path").style("stroke", "white");
+        svg.selectAll("path").style("stroke", "orange");
         svg.selectAll("text").style("stroke", "white");
     });
 
