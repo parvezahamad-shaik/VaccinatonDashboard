@@ -241,12 +241,16 @@ function projectBoostedMap(){
 }
 
 function donutChartColors(vaccine){
+    // var colors = ["#004c6d","#00a1c1","#00ffff"]
+    // var colors = ["#de425b","#ec9c9d","#f1f1f1"]
+
+     var colors = ["#ffa600","#bc5090","#2290ae"]
     if(vaccine==="Pfizer")
-        return "#ffa600"
+        return colors[0]
     else if(vaccine==="Moderna")
-        return "#bc5090"
+        return colors[1]
     else if(vaccine==="J&J")
-        return "#2290ae"
+        return colors[2]
     else
         return "#b01515"
 }
@@ -317,7 +321,9 @@ function plotVaccinationBarGraph(state) {
         .data(vaccination_data)
         .enter().append("rect")
         .attr("fill", function(d) {
-            return d.State == state ? "rgb(100,239,85)" : "skyblue";
+             // return d.State == state ? "rgba(177,238,72,0.58)" : "skyblue";
+            // return d.State == state ? "rgb(100,239,85)" : "skyblue";
+               return d.State == state ? "rgb(231,236,73)" : "skyblue";
             // return d.State == state ? "rgba(190,7,179,0.58)" : "skyblue";
         })
         .attr("class", "bar")
@@ -516,7 +522,7 @@ function updatePieChart(state){
 
     arc.append("text")
         .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")rotate(-90)"; })
-        .attr("dy", "0.45em")
+        .attr("dy", "0.39em")
         // .attr("dx", "0.1em")
         .attr("text-anchor", "middle")
         .text(function(d) { return `${d.data.percentage}`; })
@@ -540,6 +546,7 @@ function updatePieChart(state){
     xlabelPosition = -200
     ylabelPosition = -157
  var clusterColors =["#ffa600","#bc5090","#2290ae"]
+    // var clusterColors = ["#de425b","#ec9c9d","#f1f1f1"]
     var vaccines = ["Pfizer", "Moderna","Others"]
     for(let i=1;i<=3;i++) {
         svg.append("text").text(vaccines[i-1])
@@ -625,8 +632,9 @@ function updateMDSChart(mdsData)
             .attr("x", xLineScale( mds_cx[i]))
             .attr("y", yLineScale( mds_cy[i]))
             .style("font-weight", "bold")
-            .attr("dx", "0.75em")
-            .attr("dy", "0.5em")
+            .attr("dx", "-0.3em")
+            .attr("dy", "1.1em")
+            .attr("transform", "rotate(-3)")
             .text(featureNames[i])
 
 
@@ -661,7 +669,7 @@ function updateMDSChart(mdsData)
 function updateStackedChart(state){
     d3.select("body").select("#sac").selectAll('*').remove();
 
-    let margin = {top: 0, right: 100, bottom: 50, left: 100},
+    let margin = {top: 10, right: 100, bottom: 50, left: 100},
         width = window.innerWidth * 0.5 - margin.left - margin.right,
         height = window.innerHeight * 0.4 - margin.top - margin.bottom;
 
@@ -683,7 +691,9 @@ function updateStackedChart(state){
 
     let y = d3.scaleLinear()
         .range([height, 0]);
-    var clusterColors =["#e15050","#ffff00"]
+    // var clusterColors =["#e15050","#ffff00"]
+    // var clusterColors =["#e15050","#f0f62a"]
+     var clusterColors =["#e15050","#e8ec75"]
     let color = d3.scaleOrdinal(clusterColors);
 
     let xAxis = d3.axisBottom()
@@ -740,7 +750,7 @@ function updateStackedChart(state){
         browser.append('text')
             .datum(function(d) { return d; })
             .attr('transform', function(d) { return 'translate(' + x(data[27].Date) + ',' + y(d[27][1]) + ')'; })
-            .attr('x', -6)
+            .attr('x',2)
             .attr('dy', '.35em')
             .style("text-anchor", "start")
             .attr("fill","white")
