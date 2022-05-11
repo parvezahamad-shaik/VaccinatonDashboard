@@ -14,10 +14,10 @@ def mds_correlation(temp_data):
     return mds_out
 
 data = pd.read_csv("static/data/Vaccination.csv")
-# columns = ["State","Abbr","Administered_Dose1_Pop_Pct","Series_Complete_Pop_Pct",
-#     "Booster_Doses_Vax_Pct","Metro_Counties","Non_Metro_Counties","Literacy_Rate","Total_Cases","Active_Cases",
-#     "Total_Deaths","Total_Tests","Tests_Per_Million","Population","Pfizer_Administered","Moderna_Administered",
-#      "JohnsonJohnson_Administered","Unknown_Administered"]
+val_columns = ["Dose 1%","Dose 2%",
+    "Booster Percentage","Metro Counties","Non Metro Counties","Literacy Rate","Total Cases","Active Cases",
+    "Total Deaths","Total Tests","Tests Per Million","Population","Pfizer %","Moderna %",
+     "J&J %","Unknown Vaccine %"]
 
 categoric_features = ["State", "Abbr"]
 data.drop(categoric_features, inplace=True, axis=1)
@@ -33,10 +33,10 @@ mds_cy = list(correlated_computed_data[:, 1])
 
 flask_data["mds_cx"] = mds_cx
 flask_data["mds_cy"] = mds_cy
-flask_data["columns"] = list(scaled_data.columns)
 
-# print(flask_data["mds_cx"])
-# print(flask_data["mds_cy"])
+# flask_data["columns"] = list(scaled_data.columns)
+flask_data["columns"] = val_columns
+
 app = Flask(__name__)
 @app.route('/')
 def index_html_render():

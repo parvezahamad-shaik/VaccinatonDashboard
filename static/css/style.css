@@ -25,17 +25,7 @@ button {
     height: 20px;
     padding: 1px;
 }
-axisRed line{
-  stroke: red;
-}
 
-.axisRed path{
-  stroke: red;
-}
-
-.axisRed text{
-  fill: red;
-}
 .center {
     display: flex;
     margin-top: 10px;
@@ -74,7 +64,39 @@ axisRed line{
 .padding-top {
     padding-top: 2vh;
 }
+/*.stateNcountry {*/
+/*    height: 4.75vh;*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    font-size: large;*/
+/*    border-bottom: 1px solid;*/
+/*    margin-bottom: 1px;*/
+/*  }*/
 
+/*.my_style {*/
+/*    margin-top: 7px;*/
+/*    height: 4.75vh;*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    font-size: large;*/
+/*  }*/
+
+/*.my_style2 {*/
+/*    height: 4.75vh;*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    font-size: xx-large;*/
+/*  }*/
+.axis path,
+.axis line {
+    fill: none;
+    stroke: none;
+    shape-rendering: crispEdges;
+}
+
+.browser text {
+    text-anchor: end;
+}
 
 .my_style {
     height: 4.75vh;

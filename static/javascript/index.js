@@ -2,6 +2,8 @@ var width = window.innerWidth * 0.5
 var centerDivHeight = window.innerHeight * 0.5
 var height = centerDivHeight;
 var states_json,vaccination_data,criteria;
+var flag = true;
+var clicked = false;
 // var selected_features = ["State","Abbr","Administered_Dose1_Pop_Pct","Series_Complete_Pop_Pct",
 //     "Booster_Doses_Vax_Pct","Metro_Counties","Non_Metro_Counties","Literacy_Rate","Total_Cases","Active_Cases",
 //     "Total_Deaths","Total_Tests","Tests_Per_Million","Population","Pfizer_Administered","Moderna_Administered",
@@ -84,6 +86,7 @@ d3.csv("../static/data/Vaccination.csv").then(data => {
         projectAtleastOneDoseMap()
         updateSummaryDetails()
         updatePieChart()
+        updateStackedChart()
     })
 })
 
@@ -165,9 +168,12 @@ function projectMap(){
                 .style("top", (d3.event.pageY - 28) + "px")
                 .style("color","black");
             d3.select(this).style("stroke-width","3")
-            updateSummaryDetails(d.properties.vaccinationData.State)
-            updatePieChart(d.properties.vaccinationData.State)
-            plotVaccinationBarGraph(d.properties.vaccinationData.State)
+            if(!clicked ) {
+                updateSummaryDetails(d.properties.vaccinationData.State)
+                updatePieChart(d.properties.vaccinationData.State)
+                plotVaccinationBarGraph(d.properties.vaccinationData.State)
+                updateStackedChart(d.properties.vaccinationData.State)
+            }
         })
         // fade out tooltip on mouse out
         .on("mouseout", function(d) {
@@ -175,12 +181,31 @@ function projectMap(){
                 .duration(500)
                 .style("opacity", 0);
             d3.select(this).style("stroke-width","1")
-            updateSummaryDetails()
-            updatePieChart()
-            plotVaccinationBarGraph()
+            if(!clicked ) {
+                updateSummaryDetails()
+                updatePieChart()
+                plotVaccinationBarGraph()
+                updateStackedChart()
+            }
         })
         .on("click", function(d){
-            plotVaccinationBarGraph(d.properties.vaccinationData.State)
+            clicked = true
+            if(flag) {
+                updateSummaryDetails(d.properties.vaccinationData.State)
+                updatePieChart(d.properties.vaccinationData.State)
+                plotVaccinationBarGraph(d.properties.vaccinationData.State)
+                updateStackedChart(d.properties.vaccinationData.State)
+                flag = false
+            }
+            else {
+                updateSummaryDetails()
+            updatePieChart()
+            plotVaccinationBarGraph()
+            updateStackedChart()
+                flag = true
+                clicked = false;
+            }
+
         });
 
     svg.selectAll(".stateText")
@@ -292,7 +317,7 @@ function plotVaccinationBarGraph(state) {
         .data(vaccination_data)
         .enter().append("rect")
         .attr("fill", function(d) {
-            return d.State == state ? "deeppink" : "skyblue";
+            return d.State == state ? "yellow" : "skyblue";
             // return d.State == state ? "rgba(190,7,179,0.58)" : "skyblue";
         })
         .attr("class", "bar")
@@ -302,9 +327,17 @@ function plotVaccinationBarGraph(state) {
         .attr("y", function(d) {
             return yScale(d.Abbr);
         })
-        .attr("height", yScale.bandwidth())
+        .attr("height", function(d) {
+            if(d.State === state)
+                return yScale.bandwidth() +  (yScale.bandwidth()/2);
+            else
+                return yScale.bandwidth();
+        })
         .attr("width", function(d) {
-            return xScale(d[criteria]);
+            if(d.State === state)
+                return xScale(d[criteria])
+            else
+                return xScale(d[criteria]);
         })
         .on("mouseover", function(d) {
             div.transition()
@@ -483,20 +516,37 @@ function updatePieChart(state){
 
     arc.append("text")
         .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")rotate(-90)"; })
-        .attr("dy", "0.25em")
+        .attr("dy", "0.45em")
+        // .attr("dx", "0.1em")
         .attr("text-anchor", "middle")
-        .text(function(d) { return `${d.data.vaccine} ${d.data.percentage}`; });
-
+        .text(function(d) { return `${d.data.percentage}`; })
+        .attr("fill","black")
+        .style("font-size","27px")
+        ;
 
 
     arc.append("text")
-        .text("VACCINE")
+        .text("VACCINES")
         .attr('transform', 'translate(' + -25 + ',' + -10 + ')')
         .attr("fill","white")
     arc.append("text")
         .text("ADMINISTERED")
         .attr('transform', 'translate(' + -45 + ',' + 10 + ')')
         .attr("fill","white")
+
+    // xlabelPosition = -200
+    // ylabelPosition = 40
+
+    xlabelPosition = -200
+    ylabelPosition = -157
+ var clusterColors =["#ffa600","#bc5090","#2290ae"]
+    var vaccines = ["Pfizer", "Moderna","Others"]
+    for(let i=1;i<=3;i++) {
+        svg.append("text").text(vaccines[i-1])
+            .attr("transform", "translate("+xlabelPosition.toString()+","+(ylabelPosition+30*i).toString()+") ").style("fill", clusterColors[i-1]).style("font-size", "18px");
+        svg.append("text").text("_")
+            .attr("transform", "translate("+xlabelPosition.toString()+","+((ylabelPosition+5)+30*i).toString()+") ").style("fill", clusterColors[i-1]).style("font-size", "150px");
+    }
 
 }
 
@@ -555,8 +605,11 @@ function updateMDSChart(mdsData)
             .data(mds_cx)
             .enter()
             .append("circle")
-            // .attr("fill", "rgb(12,77,199)")
-            .attr("fill", "steelblue")
+            .attr("fill", "deeppink")
+            .transition()
+            .delay(function(d,i){return(i*3)})
+            .duration(2000)
+
             .attr("cx", function (d, i) {
                 return xLineScale(mds_cx[i])
             })
@@ -572,8 +625,8 @@ function updateMDSChart(mdsData)
             .attr("x", xLineScale( mds_cx[i]))
             .attr("y", yLineScale( mds_cy[i]))
             .style("font-weight", "bold")
-            .attr("dx", "0.10em")
-            .attr("dy", "0.25em")
+            .attr("dx", "0.75em")
+            .attr("dy", "0.5em")
             .text(featureNames[i])
 
 
@@ -586,18 +639,139 @@ function updateMDSChart(mdsData)
         .style("text-anchor", "end")
         .attr("dx", "-.8em")
         .attr("dy", ".15em")
-            .attr("fill","steelblue")
+            .attr("fill","white")
         .attr("transform", "rotate(-70)");
 
     chart.append("g")
         // .attr('transform',"translate(-10,0)")
         .call(yAxisScatter)
         .selectAll("text")
-        .attr("fill","steelblue")
+        .attr("fill","white")
         .style("text-anchor", "end")
         .attr("transform", "rotate(-40)");
 
-    chart.selectAll("line").style("stroke", "blue");
+    chart.selectAll("line").style("stroke", "white");
     chart.selectAll("path").style("stroke", "white");
+
+
+    // chart.append("text").attr("x", 890).attr("y", 90).text("==> Cluster 2").style("font-size", "15px").style("fill", "rgb(59,185,156)").attr("alignment-baseline", "middle")
+}
+
+
+function updateStackedChart(state){
+    d3.select("body").select("#sac").selectAll('*').remove();
+
+    let margin = {top: 20, right: 100, bottom: 50, left: 100},
+        width = window.innerWidth * 0.5 - margin.left - margin.right,
+        height = window.innerHeight * 0.4 - margin.top - margin.bottom;
+
+    let svg = d3.select("body")
+                .select("#sac")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    let parseDate = d3.timeParse("%d/%m/%Y");
+
+    let formatNumber = d3.format(".1f"),
+        formatMillion = function(x) { return formatNumber(x / 1e6); };
+
+    let x = d3.scaleTime()
+        .range([0, width]);
+
+    let y = d3.scaleLinear()
+        .range([height, 0]);
+
+    let color = d3.scaleOrdinal(d3.schemeCategory20);
+
+    let xAxis = d3.axisBottom()
+        .scale(x);
+
+    let yAxis = d3.axisLeft()
+        .scale(y)
+        .tickFormat(formatMillion);
+
+    let area = d3.area()
+        .x(function(d) {
+            return x(d.data.Date); })
+        .y0(function(d) { return y(d[0]); })
+        .y1(function(d) { return y(d[1]); });
+
+    let stack = d3.stack()
+
+    d3.csv('../static/data/timeseries.csv').then(data => {
+        color.domain(d3.keys(data[0]).filter(function(key) { return key !== 'Date' && key !== 'State' && key !== 'Cases' && key !== 'DeathsPerMonth'; }));
+        var keys = data.columns.filter(key => key !== 'Date' && key !== 'State' && key !== 'Cases' && key !== 'DeathsPerMonth')
+        data = data.filter(d => d.State == (state ? state : "US"));
+        console.log(data)
+        data.forEach(function(d) {
+            d.Date = parseDate(d.Date);
+        });
+        var maxDateVal = d3.max(data, function(d){
+            var vals = d3.keys(d).map(function(key){ return key !== 'Date' && key !== 'State' && key !== 'Cases' && key !== 'DeathsPerMonth' ? d[key] : 0 });
+            return d3.sum(vals);
+        });
+
+        // Set domains for axes
+        x.domain(d3.extent(data, function(d) { return d.Date; }));
+        y.domain([0, maxDateVal])
+
+        stack.keys(keys);
+
+        stack.order(d3.stackOrderNone);
+        stack.offset(d3.stackOffsetNone);
+
+        console.log(stack(data));
+
+        var browser = svg.selectAll('.browser')
+            .data(stack(data))
+            .enter()
+            .append('g')
+            .attr('class', function(d){ return 'browser ' + d.key; })
+            .attr('fill-opacity', 0.5);
+
+        browser.append('path')
+            .attr('class', 'area')
+            .attr('d', area)
+            .style('fill', function(d) { return color(d.key); });
+
+        browser.append('text')
+            .datum(function(d) { return d; })
+            .attr('transform', function(d) { return 'translate(' + x(data[27].Date) + ',' + y(d[27][1]) + ')'; })
+            .attr('x', -6)
+            .attr('dy', '.35em')
+            .style("text-anchor", "start")
+            .attr("fill","white")
+            .text(function(d) { return d.key; })
+            .attr('fill-opacity', 1);
+
+        svg.append('g')
+            .attr('class', 'x axis')
+            .attr('transform', 'translate(0,' + height + ')')
+             .attr("fill","white")
+            .call(xAxis)
+         .attr("fill","white");
+
+        svg.append('g')
+            .attr('class', 'y axis')
+            .call(yAxis)
+         .attr("fill","white")
+        ;
+
+        svg.append ("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left + 60)
+            .attr("x", 0 - (height / 2) - 20)
+            .attr("fill","white")
+            // .attr("x", 0-margin.left)
+            .text("People in Millions");
+        // d3.select("svg").select(".browser Deaths").style("stroke","red")
+        svg.selectAll("line").style("stroke", "white");
+        // svg.selectAll("path").style("stroke", "white");
+        svg.selectAll("text").style("stroke", "white");
+    });
+
 }
 
