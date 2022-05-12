@@ -14,7 +14,7 @@
 
 .button2 {background-color: #008CBA;} /* Blue */
 .button3 {background-color: #f44336;} /* Red */
-.button4 {background-color: powderblue; color: black;} /* Gray */
+.button4 {background-color: powderblue; color: black} /* Gray */
 .button5 {background-color: #555555;} /* Black */
 
 button {
@@ -64,29 +64,18 @@ button {
 .padding-top {
     padding-top: 2vh;
 }
-/*.stateNcountry {*/
-/*    height: 4.75vh;*/
-/*    display: flex;*/
-/*    justify-content: center;*/
-/*    font-size: large;*/
-/*    border-bottom: 1px solid;*/
-/*    margin-bottom: 1px;*/
-/*  }*/
+.tooltip2 {
+    position: absolute;
+    z-index: 10;
+    visibility: hidden;
+    background-color: lightblue;
+    text-align: center;
+    padding: 4px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: orange;
+}
 
-/*.my_style {*/
-/*    margin-top: 7px;*/
-/*    height: 4.75vh;*/
-/*    display: flex;*/
-/*    justify-content: center;*/
-/*    font-size: large;*/
-/*  }*/
-
-/*.my_style2 {*/
-/*    height: 4.75vh;*/
-/*    display: flex;*/
-/*    justify-content: center;*/
-/*    font-size: xx-large;*/
-/*  }*/
 .axis path,
 .axis line {
     fill: none;

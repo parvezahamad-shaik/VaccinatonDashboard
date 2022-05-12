@@ -4,15 +4,31 @@ var height = centerDivHeight;
 var states_json,vaccination_data,criteria;
 var flag = true;
 var clicked = false;
+
 // var selected_features = ["State","Abbr","Administered_Dose1_Pop_Pct","Series_Complete_Pop_Pct",
 //     "Booster_Doses_Vax_Pct","Metro_Counties","Non_Metro_Counties","Literacy_Rate","Total_Cases","Active_Cases",
 //     "Total_Deaths","Total_Tests","Tests_Per_Million","Population","Pfizer_Administered","Moderna_Administered",
 //     "JohnsonJohnson_Administered","Unknown_Administered"]
 
+var atleastOne = d3.select("#button_atleastone").on("click",function(){
+    d3.select("#button_atleastone").style("border","2px solid yellow")
+    d3.select("#button_fullyvaccinated").style("border","2px solid white")
+    d3.select("#button_boosted").style("border","2px solid white")
+    projectAtleastOneDoseMap()
+});
+var fullyVaxxed = d3.select("#button_fullyvaccinated").on("click",function(){
+    // d3.select("#button_fullyvaccinated").style("background-color","rgb(171,193,234)")
+    d3.select("#button_fullyvaccinated").style("border","2px solid yellow")
+    d3.select("#button_atleastone").style("border","2px solid white")
+    d3.select("#button_boosted").style("border","2px solid white")
+    projectFullyVaccinatedMap()});
 
-document.getElementById('button_atleastone').addEventListener('click', projectAtleastOneDoseMap);
-document.getElementById('button_fullyvaccinated').addEventListener('click', projectFullyVaccinatedMap);
-document.getElementById('button_boosted').addEventListener('click', projectBoostedMap);
+var boosted = d3.select("#button_boosted").on("click",function(){
+    d3.select("#button_boosted").style("border","2px solid yellow")
+    d3.select("#button_atleastone").style("border","2px solid white")
+    d3.select("#button_fullyvaccinated").style("border","2px solid white")
+    projectBoostedMap()})
+
 
 var atleast_one_dose_colors = ["rgb(199, 117, 96)","rgb(219, 167, 136)","rgb(239, 219, 203)","rgb(179, 208, 199)","rgb(111, 161, 148)" ,"rgb(47, 114, 100)"]
 var atleast_one_dose_domain = [45,50,55,60,65,85]
@@ -215,7 +231,7 @@ function projectMap(){
             return path.centroid(d)[0];
         })
         .attr("y", function(d) {
-            return path.centroid(d)[1];
+            return path.centroid(d)[1] ;
         })
         .attr("text-anchor", "middle")
         .attr("font-size", "1.5vh")
@@ -557,88 +573,93 @@ function updatePieChart(state){
 
 }
 
-function updateMDSChart(mdsData)
-{
-        d3.select("body").select("#mds").selectAll('*').remove();
-        var data = mdsData
+function updateMDSChart(mdsData) {
+    d3.select("body").select("#mds").selectAll('*').remove();
+    var data = mdsData
 
-        var mds_cx = data["mds_cx"]
-        var mds_cy = data["mds_cy"]
-        var featureNames = data["columns"]
-        // var kmeansCorrelated = data["kmeans_correlated"]
-        // console.log(mds_cy, mds_cx)
+    var mds_cx = data["mds_cx"]
+    var mds_cy = data["mds_cy"]
+    var featureNames = data["columns"]
+    // var kmeansCorrelated = data["kmeans_correlated"]
+    // console.log(mds_cy, mds_cx)
 
 
-        var margin = {
-            top: 20, right: 30, bottom: 120, left: 30
-        }; // setting up margins for chart
-        var width = 400 - margin.left - margin.right; // width of the chart
-        var height = 400 - margin.top - margin.bottom; //height of bar/
+    var margin = {
+        top: 20, right: 30, bottom: 120, left: 30
+    }; // setting up margins for chart
+    var width = 400 - margin.left - margin.right; // width of the chart
+    var height = 400 - margin.top - margin.bottom; //height of bar/
 
-        //Create SVG
-        var svg = d3.select("body") //create Svg element
-            .select("#mds")
-            .append("svg")
-            .attr('width', width + margin.right + margin.left) //width of the SVG canvas
-            .attr('height', height + margin.top + margin.bottom) //height of the SVG canvas;
+    //Create SVG
+    var svg = d3.select("body") //create Svg element
+        .select("#mds")
+        .append("svg")
+        .attr('width', width + margin.right + margin.left) //width of the SVG canvas
+        .attr('height', height + margin.top + margin.bottom) //height of the SVG canvas;
 
-        var chart = svg.append('g')
-            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-            .attr('width', width)
-            .attr('height', height);
+    var chart = svg.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+        .attr('width', width)
+        .attr('height', height);
 
-        var xDomainMin = d3.min(mds_cx, function (d) {
-            return d
+    var xDomainMin = d3.min(mds_cx, function (d) {
+        return d
+    })
+    var xDomainMax = d3.max(mds_cx, function (d) {
+        return d
+    })
+    var yDomainMin = d3.min(mds_cy, function (d) {
+        return d
+    })
+    var yDomainMax = d3.max(mds_cy, function (d) {
+        return d
+    })
+    var xLineScale = d3.scaleLinear().domain([xDomainMin - 0.1, xDomainMax + 0.4]).range([0, width]),
+        yLineScale = d3.scaleLinear().domain([yDomainMin - 0.8, yDomainMax + 0.4]).range([height, 0]);
+
+    var xAxisScatter = d3.axisBottom(xLineScale)
+    var yAxisScatter = d3.axisLeft(yLineScale)
+
+    // xAxisScatter.style("fill","blue")
+
+
+    var title = chart.selectAll(".dot")
+        .data(mds_cx)
+        .enter()
+        .append("circle")
+        .attr("fill", "deeppink")
+        // .attr("fill", "rgb(159, 90, 253)")
+        .transition()
+        .delay(function (d, i) {
+            return (i * 3)
         })
-        var xDomainMax = d3.max(mds_cx, function (d) {
-            return d
+        .duration(2000)
+
+        .attr("cx", function (d, i) {
+            return xLineScale(mds_cx[i])
         })
-        var yDomainMin = d3.min(mds_cy, function (d) {
-            return d
+        .attr("cy", function (d, i) {
+            return yLineScale(mds_cy[i])
         })
-        var yDomainMax = d3.max(mds_cy, function (d) {
-            return d
-        })
-        var xLineScale = d3.scaleLinear().domain([xDomainMin - 0.1, xDomainMax + 0.4]).range([0, width]),
-            yLineScale = d3.scaleLinear().domain([yDomainMin - 0.8, yDomainMax + 0.4]).range([height, 0]);
+        .attr("r", 6);
 
-        var xAxisScatter = d3.axisBottom(xLineScale)
-        var yAxisScatter = d3.axisLeft(yLineScale)
+    // title.append("svg:title")
+    //    .text(function(d,i) { return featureNames[i]; });
 
-        // xAxisScatter.style("fill","blue")
-
-
-        chart.selectAll(".dot")
-            .data(mds_cx)
-            .enter()
-            .append("circle")
-            .attr("fill", "deeppink")
-            .transition()
-            .delay(function(d,i){return(i*3)})
-            .duration(2000)
-
-            .attr("cx", function (d, i) {
-                return xLineScale(mds_cx[i])
-            })
-            .attr("cy", function (d, i) {
-                return yLineScale(mds_cy[i])
-            })
-            .attr("r", 6)
-
-        for (let i = 0; i < featureNames.length; i++) {
-        chart.append("text")
-            .attr("fill", "white")
-            .attr("r", 3)
-            .attr("x", xLineScale( mds_cx[i]))
-            .attr("y", yLineScale( mds_cy[i]))
-            .style("font-weight", "bold")
-            .attr("dx", "-0.3em")
-            .attr("dy", "1.1em")
-            .attr("transform", "rotate(-3)")
-            .text(featureNames[i])
+    for (let i = 0; i < featureNames.length; i++) {
+    chart.append("text")
+        .attr("fill", "white")
+        .attr("r", 3)
+        .attr("x", xLineScale( mds_cx[i]))
+        .attr("y", yLineScale( mds_cy[i]))
+        .style("font-weight", "bold")
+        .attr("dx", "-0.3em")
+        .attr("dy", "1.1em")
+        .attr("transform", "rotate(-3)")
+        .text(featureNames[i])
+}
 
 
-    }
         chart.append("g")
         .call(xAxisScatter)
         .attr('transform', 'translate(0,' + height + ')')
